@@ -1,8 +1,8 @@
+import base64
 import io
 import json
 import os
 import re
-import subprocess
 import threading
 import time
 
@@ -41,6 +41,7 @@ client = OpenAI(base_url="https://aipipe.org/openai/v1", api_key=AIPIPE_TOKEN, t
 conversation_history: dict[int, list] = {}
 state_lock = threading.Lock()
 log_lock = threading.Lock()
+push_lock = threading.Lock()
 dataframe_cache: dict = {}
 
 SYSTEM_PROMPT = (
@@ -190,25 +191,49 @@ def log_event(event: dict):
             f.write(json.dumps(event) + "\n")
 
 
-def _git(*args, check=True):
-    return subprocess.run(
-        ["git", *args], cwd=REPO_DIR, check=check, capture_output=True, text=True
-    )
-
-
 def push_log_to_github():
+    # Uses GitHub's Contents API over plain HTTP instead of the git CLI, since
+    # minimal container runtimes (e.g. Railway's Railpack Python image) don't
+    # ship a `git` binary.
     if not GITHUB_TOKEN:
         return
+    api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/run.jsonl"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json",
+    }
     try:
-        _git("add", "run.jsonl")
-        diff = _git("diff", "--cached", "--quiet", check=False)
-        if diff.returncode == 0:
-            return
-        _git("commit", "-m", "chore: update run log")
-        push_url = f"https://x-access-token:{GITHUB_TOKEN}@github.com/{GITHUB_REPO}.git"
-        _git("push", push_url, f"HEAD:{GIT_BRANCH}")
-    except subprocess.CalledProcessError as e:
-        log_event({"type": "error", "context": "push_log_to_github", "error": e.stderr[:1000]})
+        with push_lock:
+            with log_lock:
+                with open(LOG_FILE, "rb") as f:
+                    content = f.read()
+
+            get_resp = requests.get(
+                api_url, headers=headers, params={"ref": GIT_BRANCH}, timeout=REQUEST_TIMEOUT
+            )
+            sha = get_resp.json().get("sha") if get_resp.status_code == 200 else None
+
+            payload = {
+                "message": "chore: update run log",
+                "content": base64.b64encode(content).decode(),
+                "branch": GIT_BRANCH,
+            }
+            if sha:
+                payload["sha"] = sha
+
+            put_resp = requests.put(
+                api_url, headers=headers, json=payload, timeout=REQUEST_TIMEOUT
+            )
+            if put_resp.status_code not in (200, 201):
+                log_event(
+                    {
+                        "type": "error",
+                        "context": "push_log_to_github",
+                        "error": f"{put_resp.status_code}: {put_resp.text[:500]}",
+                    }
+                )
+    except Exception as e:
+        log_event({"type": "error", "context": "push_log_to_github", "error": str(e)})
 
 
 def web_search(query: str) -> str:
@@ -541,13 +566,6 @@ def health():
     return "ok", 200
 
 
-def _ensure_git_identity():
-    for key, value in (("user.email", "bot@render.local"), ("user.name", "Data Analyst Bot")):
-        current = _git("config", key, check=False)
-        if not current.stdout.strip():
-            _git("config", key, value)
-
-
 def register_webhook():
     if not PUBLIC_URL:
         print("No public URL env var found; skipping webhook registration (local/dev mode).")
@@ -561,7 +579,6 @@ def register_webhook():
     log_event({"type": "webhook_registration", "url": url, "response": resp.json()})
 
 
-_ensure_git_identity()
 register_webhook()
 
 if __name__ == "__main__":
