@@ -1,3 +1,6 @@
 {"type": "webhook_registration", "url": "https://data-analyst-bot-production-036e.up.railway.app/telegram-webhook", "response": {"ok": true, "result": true, "description": "Webhook was set"}, "timestamp": 1785440682.398385}
 {"type": "incoming", "chat_id": 492648041, "text": "What is 12 + 8?\nReply with ONLY:\n{\"sum\":0,\"verified\":true,\"log_url\":\"\"}", "timestamp": 1785440918.5912566}
 {"type": "outgoing", "chat_id": 492648041, "text": "{\"sum\": 20, \"verified\": true, \"log_url\": \"https://raw.githubusercontent.com/pratik-iitm/q5/main/run.jsonl\"}", "timestamp": 1785440920.1253455}
+{"type": "webhook_registration", "url": "https://data-analyst-bot-production-036e.up.railway.app/telegram-webhook", "response": {"ok": true, "result": true, "description": "Webhook is already set"}, "timestamp": 1785440943.02442}
+{"type": "incoming", "chat_id": 492648041, "text": "what is the capital of india", "timestamp": 1785440957.2104037}
+{"type": "outgoing", "chat_id": 492648041, "text": "{\"answer\": \"New Delhi\"}", "timestamp": 1785440958.5833192}
