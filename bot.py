@@ -21,7 +21,11 @@ LOG_URL = os.environ["LOG_URL"]
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 GITHUB_REPO = os.environ.get("GITHUB_REPO", "pratik-iitm/q5")
 GIT_BRANCH = os.environ.get("GIT_BRANCH", "main")
-RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL")
+PUBLIC_URL = os.environ.get("RENDER_EXTERNAL_URL") or os.environ.get("PUBLIC_URL")
+if not PUBLIC_URL:
+    railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN") or os.environ.get("RAILWAY_STATIC_URL")
+    if railway_domain:
+        PUBLIC_URL = f"https://{railway_domain}"
 
 MODEL = "gpt-5.4-mini"
 MAX_HISTORY = 12
@@ -545,10 +549,10 @@ def _ensure_git_identity():
 
 
 def register_webhook():
-    if not RENDER_EXTERNAL_URL:
-        print("RENDER_EXTERNAL_URL not set; skipping webhook registration (local/dev mode).")
+    if not PUBLIC_URL:
+        print("No public URL env var found; skipping webhook registration (local/dev mode).")
         return
-    url = f"{RENDER_EXTERNAL_URL}/telegram-webhook"
+    url = f"{PUBLIC_URL}/telegram-webhook"
     resp = requests.post(
         f"{TELEGRAM_API}/setWebhook",
         json={"url": url, "secret_token": WEBHOOK_SECRET},
