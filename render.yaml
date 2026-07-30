@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: data-analyst-bot
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn bot:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: AIPIPE_TOKEN
+        sync: false
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_REPO
+        value: pratik-iitm/q5
+      - key: GIT_BRANCH
+        value: main
+      - key: LOG_URL
+        value: https://raw.githubusercontent.com/pratik-iitm/q5/main/run.jsonl

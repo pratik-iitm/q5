@@ -1,0 +1,9 @@
+flask
+gunicorn
+openai>=1.40.0
+requests
+beautifulsoup4
+pandas
+openpyxl
+pypdf
+python-dotenv
