@@ -12,3 +12,6 @@
 {"type": "incoming", "chat_id": 492648041, "text": "What is the capital of us", "timestamp": 1786479875.4807405}
 {"type": "error", "context": "run_agent", "error": "Error code: 401 - {'message': 'Bearer token is invalid: JWTExpired: \"exp\" claim timestamp check failed'}", "timestamp": 1786479875.5440676}
 {"type": "outgoing", "chat_id": 492648041, "text": "{\"error\": \"agent_failed\", \"log_url\": \"https://raw.githubusercontent.com/pratik-iitm/q5/main/run.jsonl\"}", "timestamp": 1786479875.5443127}
+{"type": "incoming", "chat_id": 492648041, "text": "What is the capital of india", "timestamp": 1786479887.9086833}
+{"type": "error", "context": "run_agent", "error": "Error code: 401 - {'message': 'Bearer token is invalid: JWTExpired: \"exp\" claim timestamp check failed'}", "timestamp": 1786479887.9555645}
+{"type": "outgoing", "chat_id": 492648041, "text": "{\"error\": \"agent_failed\", \"log_url\": \"https://raw.githubusercontent.com/pratik-iitm/q5/main/run.jsonl\"}", "timestamp": 1786479887.9556808}
