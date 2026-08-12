@@ -23,3 +23,6 @@
 {"type": "incoming", "chat_id": 492648041, "text": "Capital of india", "timestamp": 1786564488.5486197}
 {"type": "error", "context": "run_agent", "error": "Error code: 401 - {'message': 'Bearer token is invalid: JWTExpired: \"exp\" claim timestamp check failed'}", "timestamp": 1786564488.9850464}
 {"type": "outgoing", "chat_id": 492648041, "text": "{\"error\": \"agent_failed\", \"log_url\": \"https://raw.githubusercontent.com/pratik-iitm/q5/main/run.jsonl\"}", "timestamp": 1786564488.9881964}
+{"type": "webhook_registration", "url": "https://data-analyst-bot-production-036e.up.railway.app/telegram-webhook", "response": {"ok": true, "result": true, "description": "Webhook is already set"}, "timestamp": 1786569970.5478976}
+{"type": "incoming", "chat_id": 492648041, "text": "2+2", "timestamp": 1786571598.7669911}
+{"type": "outgoing", "chat_id": 492648041, "text": "{\"answer\": 4}", "timestamp": 1786571600.69253}
